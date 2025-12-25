@@ -1,0 +1,359 @@
+import React, { useState, useEffect } from 'react';
+import { AlignJustify, X, ExternalLink, Heart, Star, Coffee, Wheat, Gift } from 'lucide-react';
+
+// Custom colors mapped to hex codes for direct usage without config
+const colors = {
+    brand: {
+        // Softer Pastel Valentine's Palette
+        50: '#fff5f7',  // Very pale pink background (Lighter)
+        100: '#ffe3e8', // Soft pink
+        200: '#ffc2d1', // Baby pink
+        300: '#ffa6b9', // Pastel pink
+        500: '#ff8fab', // Main soft pink for accents
+        800: '#9d0208', // Deep red for text (Contrast)
+        900: '#6a040f', // Darkest red for headings
+    },
+    accent: {
+        // Softer Accent
+        light: '#fff0f3',  
+        DEFAULT: '#ff4d6d', // Rose pink for buttons (Softer than red)
+    }
+};
+
+const FloatingHearts = () => {
+    const [hearts, setHearts] = useState([]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const newHeart = {
+                id: Date.now(),
+                left: Math.random() * 100, // Random horizontal position
+                animationDuration: Math.random() * 5 + 5, // Random speed (5-10s)
+                opacity: Math.random() * 0.5 + 0.3, // Random opacity
+                size: Math.random() * 20 + 10, // Random size
+            };
+
+            setHearts(prev => [...prev, newHeart]);
+
+            // Cleanup old hearts
+            setTimeout(() => {
+                setHearts(prev => prev.filter(h => h.id !== newHeart.id));
+            }, 10000); // Remove after 10s
+
+        }, 1500); // Add new heart every 1.5s
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            {hearts.map(heart => (
+                <div
+                    key={heart.id}
+                    className="absolute text-pink-300"
+                    style={{
+                        left: `${heart.left}%`,
+                        bottom: '-50px',
+                        fontSize: `${heart.size}px`,
+                        opacity: heart.opacity,
+                        animation: `floatUp ${heart.animationDuration}s linear forwards`,
+                        color: colors.brand[300]
+                    }}
+                >
+                    <Heart fill="currentColor" />
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const BakeryMenu = () => {
+    // Mock Data
+    const menuItems = {
+        cookies: [
+            { id: 1, name: "คุกกี้ชาเขียว", desc: "หอมกลิ่นมัทฉะแท้ หวานน้อย", price: "00.-", image: "https://placehold.co/600x400/dbead5/5d4037?text=Matcha+Cookie" },
+            { id: 2, name: "คุกกี้เรดเวลเวท", desc: "สีสันสดใส สอดไส้ไวท์ช็อก", price: "00.-", image: "https://placehold.co/600x400/eddcd9/5d4037?text=Red+Velvet" },
+            { id: 3, name: "คุกกี้ออริจินัล", desc: "รสเนยสดแท้ กรอบนอกนุ่มใน", price: "00.-", image: "https://placehold.co/600x400/eaddd7/5d4037?text=Original+Cookie" },
+            { id: 4, name: "คุกกี้ช็อกโกแลต", desc: "เข้มข้นดาร์กช็อกโกแลตเต็มคำ", price: "00.-", image: "https://placehold.co/600x400/d7ccc8/5d4037?text=Chocolate+Cookie" },
+        ],
+        brownies: [
+            { id: 5, name: "บราวนี่ชาเขียว", desc: "เนื้อหนึบ หอมชาเขียวพรีเมียม", price: "00.-", image: "https://placehold.co/600x400/dbead5/5d4037?text=Matcha+Brownie" },
+            { id: 6, name: "บราวนี่ออริจินัล", desc: "ช็อกโกแลตแท้ เนื้อฟัดจ์", price: "00.-", image: "https://placehold.co/600x400/d7ccc8/5d4037?text=Original+Brownie" },
+            { id: 7, name: "บราวนี่เรดเวลเวท", desc: "เนื้อกำมะหยี่ ละมุนลิ้น", price: "00.-", image: "https://placehold.co/600x400/eddcd9/5d4037?text=Red+Velvet+Brownie" },
+        ],
+        bread: [
+            { id: 8, name: "โทสต์พิซซ่า", desc: "ชีสเยิ้ม เครื่องแน่น อบใหม่", price: "00.-", image: "https://placehold.co/600x400/fff3e0/5d4037?text=Pizza+Toast" },
+            { id: 9, name: "โทสต์ผักโขม", desc: "ผักโขมอบชีส หอมอร่อย", price: "00.-", image: "https://placehold.co/600x400/e8f5e9/5d4037?text=Spinach+Toast" },
+        ],
+        festival: [
+            { id: 10, name: "คุกกี้สตรอว์เบอร์รีวาเลนไทน์", desc: "Limited Edition หวานซ่อนเปรี้ยว", price: "00.-", image: "https://placehold.co/600x400/fce4ec/ad1457?text=Strawberry+Val" },
+            { id: 11, name: "คุกกี้ดาร์กช็อกวาเลนไทน์", desc: "เข้มข้น สื่อแทนใจ", price: "00.-", image: "https://placehold.co/600x400/efebe9/3e2723?text=Dark+Choc+Val" },
+            { id: 12, name: "บราวนี่เซ็ทวาเลนไทน์", desc: "คละรสได้ 4 ชิ้น พร้อมกล่องของขวัญ", price: "000.-", image: "https://placehold.co/600x400/f8bbd0/880e4f?text=Valentine+Set" },
+        ]
+    };
+
+    const categories = [
+        { id: 'cookies', label: 'Cookies', icon: <Star size={18} /> },
+        { id: 'brownies', label: 'Brownies', icon: <Coffee size={18} /> },
+        { id: 'bread', label: 'Bread', icon: <Wheat size={18} /> },
+        { id: 'festival', label: 'Festival', icon: <Gift size={18} /> },
+    ];
+
+    const Navbar = () => {
+        const [isScrolled, setIsScrolled] = useState(false);
+        const [activeSection, setActiveSection] = useState('');
+
+        useEffect(() => {
+            const handleScroll = () => {
+                setIsScrolled(window.scrollY > 50);
+                
+                const sections = categories.map(cat => document.getElementById(cat.id));
+                const scrollPosition = window.scrollY + 150;
+
+                sections.forEach(section => {
+                    if (section && section.offsetTop <= scrollPosition && (section.offsetTop + section.offsetHeight) > scrollPosition) {
+                        setActiveSection(section.id);
+                    }
+                });
+            };
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+        }, []);
+
+        const scrollToSection = (id) => {
+            const element = document.getElementById(id);
+            if (element) {
+                const offset = 80;
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = element.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        };
+
+        return (
+            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+                <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
+                    <div className="text-2xl font-bold tracking-wide" style={{ color: colors.brand[800] }}>
+                        B & H
+                    </div>
+                    
+                    <div className="hidden md:flex space-x-8">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => scrollToSection(cat.id)}
+                                className={`flex items-center gap-2 text-sm font-medium transition-colors duration-300 uppercase tracking-wider`}
+                                style={{ color: activeSection === cat.id ? colors.brand[800] : colors.brand[500] }}
+                            >
+                                {cat.icon}
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="md:hidden" style={{ color: colors.brand[800] }}>
+                        <AlignJustify />
+                    </div>
+                </div>
+                
+                 <div className="md:hidden flex overflow-x-auto gap-4 px-4 py-3 mt-2 hide-scrollbar">
+                    {categories.map((cat) => (
+                         <button
+                            key={cat.id}
+                            onClick={() => scrollToSection(cat.id)}
+                            className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium border`}
+                            style={{ 
+                                backgroundColor: activeSection === cat.id ? colors.brand[800] : 'rgba(255,255,255,0.8)',
+                                color: activeSection === cat.id ? 'white' : colors.brand[800],
+                                borderColor: activeSection === cat.id ? colors.brand[800] : colors.brand[200]
+                            }}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
+                 </div>
+            </nav>
+        );
+    };
+
+    const Hero = () => (
+        <section className="pt-32 pb-16 px-4 text-center min-h-[60vh] flex flex-col justify-center items-center relative z-10" style={{ backgroundColor: 'transparent' }}>
+            <span className="uppercase tracking-[0.2em] text-sm mb-4" style={{ color: colors.brand[500] }}>Homemade with Love</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 font-serif" style={{ color: colors.brand[900] }}>
+                Brown & Heart<br/>
+            </h1>
+            <p className="max-w-lg mx-auto mb-10 leading-relaxed font-light" style={{ color: `${colors.brand[800]}B3` }}> 
+                ขนมโฮมเมดอบใหม่จากเตา ใส่ใจทุกรายละเอียด 
+                <br/>เลือกใช้วัตถุดิบคุณภาพดี เพื่อรสชาติที่ดีที่สุดสำหรับคุณ
+            </p>
+            <button 
+                onClick={() => document.getElementById('cookies').scrollIntoView({behavior: 'smooth'})}
+                className="text-white px-8 py-3 rounded-full hover:scale-105 shadow-lg flex items-center gap-2 transition-all transform"
+                style={{ backgroundColor: colors.accent.DEFAULT }}
+            >
+                ดูเมนูของเรา
+            </button>
+        </section>
+    );
+
+    const ProductCard = ({ item, isFestival }) => (
+        <div className="group bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border relative z-10" style={{ borderColor: `${colors.brand[100]}80` }}>
+            <div className="relative overflow-hidden aspect-[4/3]">
+                <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                />
+                {isFestival && (
+                    <div className="absolute top-3 right-3 text-white text-xs px-3 py-1 rounded-full shadow-md font-medium" style={{ backgroundColor: colors.accent.DEFAULT }}>
+                        Seasonal
+                    </div>
+                )}
+            </div>
+            <div className="p-6">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold" style={{ color: colors.brand[900] }}>{item.name}</h3>
+                    <span className="font-medium px-2 py-1 rounded-md text-sm" style={{ backgroundColor: colors.brand[100], color: colors.brand[800] }}>{item.price}</span>
+                </div>
+                <p className="text-gray-500 text-sm font-light mb-6 min-h-[40px]">{item.desc}</p>
+                
+                <a 
+                    href="https://line.me/ti/p/~yourlineid"
+                    target="_blank"
+                    className={`w-full block text-center py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm font-medium`}
+                    style={{ 
+                        backgroundColor: isFestival ? colors.accent.light : colors.brand[50],
+                        color: isFestival ? colors.accent.DEFAULT : colors.brand[800]
+                    }}
+                >
+                    สั่งซื้อทาง LINE
+                    <ExternalLink size={14} />
+                </a>
+            </div>
+        </div>
+    );
+
+    const MenuSection = ({ id, title, items, subtitle, isFestival = false }) => (
+        <section id={id} className={`py-20 px-4 relative z-10`} style={{ backgroundColor: isFestival ? 'rgba(255,255,255,0.6)' : 'transparent' }}>
+            <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-16">
+                    <span className={`uppercase tracking-widest text-xs font-bold mb-2 block`} style={{ color: isFestival ? colors.accent.DEFAULT : colors.brand[500] }}>
+                        {subtitle}
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3" style={{ color: colors.brand[900] }}>
+                        {title}
+                        {isFestival && <Heart className="fill-current" style={{ color: colors.accent.DEFAULT }} />}
+                    </h2>
+                    <div className={`h-1 w-20 mx-auto mt-6 rounded-full`} style={{ backgroundColor: isFestival ? colors.accent.DEFAULT : colors.brand[200] }}></div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {items.map(item => (
+                        <ProductCard key={item.id} item={item} isFestival={isFestival} />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+
+    const Footer = () => (
+        <footer className="py-16 px-4 relative z-10" style={{ backgroundColor: colors.brand[900], color: colors.brand[50] }}>
+            <div className="max-w-4xl mx-auto text-center">
+                <h2 className="text-2xl font-bold mb-6">HOME BAKERY</h2>
+                <p className="mb-8 font-light" style={{ color: colors.brand[200] }}>
+                    อบด้วยใจ ใส่ใจทุกขั้นตอน <br/>
+                    สอบถามข้อมูลเพิ่มเติมหรือสั่งขนมได้ที่ LINE Official
+                </p>
+                <a 
+                    href="https://lin.ee/fsWVzqg" 
+                    target="_blank"
+                    className="inline-flex items-center gap-2 text-white px-8 py-3 rounded-full hover:bg-[#05b54c] transition-colors shadow-lg font-medium"
+                    style={{ backgroundColor: colors.accent.DEFAULT }}
+                >
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" className="w-6 h-6 invert" alt="Line" />
+                    แอดไลน์สั่งขนม
+                </a>
+                <div className="mt-16 text-xs border-t pt-8" style={{ borderColor: colors.brand[800], color: colors.brand[300] }}>
+                    © 2024 Home Bakery. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    );
+
+    const LineFloatingBtn = () => (
+        <a 
+            href="https://line.me/ti/p/~yourlineid"
+            target="_blank"
+            className="fixed bottom-6 right-6 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-50 flex items-center justify-center"
+            style={{ backgroundColor: colors.accent.DEFAULT }}
+        >
+            <span className="font-bold text-xl">LINE</span>
+        </a>
+    );
+
+    return (
+        <div className="font-sans antialiased relative min-h-screen" style={{ backgroundColor: colors.brand[50], color: colors.brand[800] }}>
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
+                body { font-family: 'Prompt', sans-serif; background-color: ${colors.brand[50]}; scroll-behavior: smooth; }
+                .hide-scrollbar::-webkit-scrollbar { display: none; }
+                .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                @keyframes floatUp {
+                    0% {
+                        transform: translateY(0) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(-100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `}</style>
+            
+            <FloatingHearts />
+            
+            <Navbar />
+            <Hero />
+            
+            <MenuSection 
+                id="cookies" 
+                title="Soft Cookies" 
+                subtitle="Signature Menu"
+                items={menuItems.cookies} 
+            />
+            
+            <MenuSection 
+                id="brownies" 
+                title="Fudgy Brownies" 
+                subtitle="Rich & Chewy"
+                items={menuItems.brownies} 
+            />
+            
+            <MenuSection 
+                id="bread" 
+                title="Savory Toast" 
+                subtitle="Freshly Baked"
+                items={menuItems.bread} 
+            />
+
+            <MenuSection 
+                id="festival" 
+                title="Valentine's Special" 
+                subtitle="Limited Time Only"
+                items={menuItems.festival}
+                isFestival={true}
+            />
+
+            <Footer />
+            <LineFloatingBtn />
+        </div>
+    );
+};
+
+export default BakeryMenu;
